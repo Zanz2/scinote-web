@@ -1012,7 +1012,7 @@ class ProtocolsController < ApplicationController
     description_string =
       if json_hash['description'].present?
         '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
-          '</strong>' + json_hash['description']
+          '</strong>' + sanitize_input(json_hash['description'].html_safe)
       else
         '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
           '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
@@ -1022,14 +1022,14 @@ class ProtocolsController < ApplicationController
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e.to_s + ':  ' +
-          params['protocol']['created_at'] + '<br>'
+          sanitize_input(params['protocol']['created_at']) + '<br>'
       elsif e == 'tags' && json_hash[e].any? && json_hash[e] != ''
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e + ': '
         json_hash[e].each do |tag|
           description_string +=
-            tag['tag_name'] + ' , '
+            sanitize_input(tag['tag_name']) + ' , '
         end
         description_string += '<br>'
         # description_string += '<br>'
@@ -1041,7 +1041,7 @@ class ProtocolsController < ApplicationController
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e + ': ' +
-          json_hash[e] + '<br>'
+          sanitize_input(json_hash[e].html_safe) + '<br>'
       end
     end
     description_string
