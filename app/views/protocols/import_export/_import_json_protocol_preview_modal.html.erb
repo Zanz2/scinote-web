@@ -45,8 +45,8 @@
         <div class="form-group">
           <label><%= t("protocols.import_export.import_modal.description_label") %></label>
 
-          <%= f.text_area :description, :value => @json_object['description'], class:
-          "form-control" %>
+          <%= f.text_area :description_notice, :value => t("protocols.protocols_io_import.import_description_notice"), class:
+          "form-control",readonly: true %>
         </div>
         <div class="form-group">
           <div class="row">
@@ -79,37 +79,79 @@
         <div
           class="import-protocols-modal-preview-container-json"
           data-role="preview-container">
-          <hr>
+  <div style="display: block;">
+            <hr>
+            <td>
+              <div class="badge-num">
+                <span class="badge-preview bg-primary size-digit-1">
+                  <b data-val="position"><%= 1 %></b>
+                </span>
+                &nbsp; &nbsp;
+                <span class="step-panel-collapse-link" data-toggle="collapse">
+                  <span class="glyphicon collapse-step-icon glyphicon-collapse-up"></span>
+                  <strong data-val="name"><%= 'Protocol info' %></strong>
+                </span>
+              </div>
+              <br>
 
+    <div class="tab-content">
+      <div class="tab-pane active" role="tabpanel">
+        <div data-val="description" class="ql-editor">
+          <br>
           <% if @json_object["before_start"].present? %>
-
-          <strong><%= t("protocols.protocols_io_import.preview.b_s_p") %></strong><br>
-          <%= (@json_object["before_start"]) %><br>
-
+          <strong><%= t("protocols.protocols_io_import.preview.b_s_p") %></strong>
+          <%= sanitize_input(@json_object["before_start"].html_safe) %><br>
           <% end %>
           <% if @json_object["warning"].present? %>
-
-          <strong><%= t("protocols.protocols_io_import.preview.warn") %></strong><br>
-          <%= (@json_object["warning"]) %><br>
-
+          <strong><%= t("protocols.protocols_io_import.preview.warn") %></strong>
+          <%= sanitize_input(@json_object["warning"].html_safe) %><br>
+          <% end %>
+          <% if @json_object['description'].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.prot_desc") %></strong>
+          <%= sanitize_input(@json_object['description'].html_safe) %><br>
           <% end %>
           <% if @json_object["guidelines"].present? %>
-
-          <strong><%= t("protocols.protocols_io_import.preview.guideln") %></strong><br>
-          <%= (@json_object["guidelines"]) %><br>
-
+          <strong><%= t("protocols.protocols_io_import.preview.guideln") %></strong>
+          <%= sanitize_input(@json_object["guidelines"].html_safe) %><br>
           <% end %>
-
           <% if @json_object["link"].present? %>
-
-          <br><strong><%= t("protocols.protocols_io_import.preview.p_link") %></strong><br>
-          <%= (@json_object["link"]) %>
-
+          <strong><%= t("protocols.protocols_io_import.preview.p_link") %></strong>
+          <%= sanitize_input(@json_object["link"].html_safe) %><br>
           <% end %>
-
+          <% if @json_object["manuscript_citation"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.manu_cit") %></strong>
+          <%= sanitize_input(@json_object["manuscript_citation"].html_safe) %><br>
+          <% end %>
+          <% if @json_object["publish_date"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.pbl_date") %></strong>
+          <%= sanitize_input(@json_object["publish_date"]) %><br>
+          <% end %>
+          <% if @json_object["vendor_name"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.vnd_name") %></strong>
+          <%= sanitize_input(@json_object["vendor_name"]) %><br>
+          <% end %>
+          <% if @json_object["vendor_link"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.vnd_link") %></strong>
+          <%= sanitize_input(@json_object["vendor_link"].html_safe) %><br>
+          <% end %>
+          <% if @json_object["keywords"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.key_wrd") %></strong>
+          <%= sanitize_input(@json_object["keywords"]) %><br>
+          <% end %>
+          <% if @json_object["tags"].present? %>
+          <strong><%= t("protocols.protocols_io_import.preview.tags") %></strong>
+          <%  @json_object["tags"].each do |tag| %>
+          <%= sanitize_input(tag["tag_name"])+" , " %><br>
+          <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
           <%  whitelist_simple=["1","6","17"] %>
           <%  whitelist_complex=["8","9","15","18","19","20"]%>
-          <% @json_object["steps"].each_with_index do |step,counter| %>
+          <% @json_object["steps"].each_with_index do |step,counter_orig| %>
+          <% counter = counter_orig + 1 %>
           <div style="display: block;">
             <hr>
             <td>
@@ -125,7 +167,7 @@
                   <% step["components"].each do |key1,value1| #finding section (title of step) %>
                     <% key1 = value1 if value1.class == Hash %>
                     <%  if(key1["component_type_id"]=="6") %>
-                      <% title = key1["data"] if key1["data"].present? %>
+                      <% title = sanitize_input(key1["data"]) if key1["data"].present? %>
                       <% end %>
                   <% end %>
                   <% title ||=t('protocols.protocols_io_import.comp_append.missing_step') %>
@@ -150,10 +192,10 @@
                       <% case key["component_type_id"]
                       when "1" %>
                         <br><strong><%= t("protocols.protocols_io_import.preview.strng_s_desc") %></strong>
-                        <%=key["data"]%><br>
+                        <%=sanitize_input(key["data"].html_safe)%><br>
                       <% when "17" %>
                         <br><strong><%= t("protocols.protocols_io_import.preview.s_exp_res") %></strong>
-                        <%=key["data"]%>
+                        <%=sanitize_input(key["data"].html_safe)%>
                         <br>
                       <% end %>
                     <% elsif key && whitelist_complex.include?(key["component_type_id"]) %>
@@ -162,50 +204,52 @@
                       when "8"%>
                         <br>
                         <strong><%= key["name"]+": " %></strong>
-                        <%= (key["source_data"]["name"]) %>
+                        <%= sanitize_input(key["source_data"]["name"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.dev") %>
-                        <%= (key["source_data"]["developer"]) %>
+                        <%= sanitize_input(key["source_data"]["developer"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.vers") %>
-                        <%= (key["source_data"]["version"]) %>
+                        <%= sanitize_input(key["source_data"]["version"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.s_link") %>
-                        <%= (key["source_data"]["link"]) %>
+                        <%= sanitize_input(key["source_data"]["link"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.repo") %>
-                        <%= (key["source_data"]["repository"]) %>
+                        <%= sanitize_input(key["source_data"]["repository"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.os") %>
-                        <%= (key["source_data"]["os_name"])+" , "+(key["source_data"]["os_version"]) %>
+                        <%= sanitize_input(key["source_data"]["os_name"].html_safe)+
+                        " , "+sanitize_input(key["source_data"]["os_version"].html_safe) %>
 
                       <% when "9"%>
                         <br>
                         <strong><%= key["name"]+": " %></strong>
-                        <%= key["source_data"]["name"] %>
+                        <%= sanitize_input(key["source_data"]["name"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.s_link") %>
-                        <%= (key["source_data"]["link"]) %>
+                        <%= sanitize_input(key["source_data"]["link"].html_safe) %>
 
                       <% when "15"%>
                         <br>
                         <strong><%= key["name"]+": " %></strong>
-                        <%=  key["source_data"]["name"] %>
+                        <%=  sanitize_input(key["source_data"]["name"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.s_desc") %>
-                        <%= (key["source_data"]["description"]) %>
+                        <%= sanitize_input(key["source_data"]["description"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.os") %>
-                        <%= (key["source_data"]["os_name"])+" , "+(key["source_data"]["os_version"]) %>
+                        <%= sanitize_input(key["source_data"]["os_name"].html_safe)+
+                        " , "+sanitize_input(key["source_data"]["os_version"].html_safe) %>
 
                       <% when "18"%>
                         <br><strong><%= t("protocols.protocols_io_import.preview.sub_prot") %></strong>
-                        <%= (key["source_data"]["protocol_name"]) %>
+                        <%= sanitize_input(key["source_data"]["protocol_name"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.auth") %>
-                        <%= (key["source_data"]["full_name"]) %>
+                        <%= sanitize_input(key["source_data"]["full_name"].html_safe) %>
                         <br>
                         <% if key["source_data"]["link"].present? %>
                           <%= t("protocols.protocols_io_import.preview.s_nobr_link") %>
-                          <%= (key["source_data"]["link"]) %>
+                          <%= sanitize_input(key["source_data"]["link"].html_safe) %>
                         <% end %>
                       <% when "19"%>
                         <br>
                         <strong><%= key["name"]+": " %></strong>
-                        <%= key["source_data"]["body"] %>
+                        <%= sanitize_input(key["source_data"]["body"].html_safe) %>
                         <br><%= t("protocols.protocols_io_import.preview.s_link") %>
-                        <%= (key["source_data"]["link"]) %>
+                        <%= sanitize_input(key["source_data"]["link"].html_safe) %>
 
                       <% when "20"%>
 
@@ -218,7 +262,7 @@
                   <% end #step component loop %>
 
                   </div>
-                  <hr>
+
                   <!-- This could be implemented later maybe,i believe this is different styling
                   for scinotes own rich text format tables
 
@@ -241,47 +285,7 @@
             </div>
 
             <% end  #step loop%>
-
-            <% if
-            @json_object["manuscript_citation"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.manu_cit") %></strong><br>
-            <%= (@json_object["manuscript_citation"]) %>
-
-            <% end %>
-            <% if @json_object["publish_date"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.pbl_date") %></strong><br>
-            <%= (@json_object["publish_date"]) %>
-
-            <% end %>
-            <% if @json_object["vendor_name"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.vnd_name") %></strong><br>
-            <%= (@json_object["vendor_name"]) %>
-
-            <% end %>
-            <% if @json_object["vendor_link"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.vnd_link") %></strong><br>
-            <%= (@json_object["vendor_link"]) %>
-
-            <% end %>
-            <% if @json_object["keywords"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.key_wrd") %></strong><br>
-            <%= (@json_object["keywords"]) %>
-
-            <% end %>
-            <% if @json_object["tags"].present? %>
-
-            <br><strong><%= t("protocols.protocols_io_import.preview.tags") %></strong><br>
-            <%  @json_object["tags"].each do |tag| %>
-            <%= (tag["tag_name"])+" , " %>
-            <% end %>
-
-            <% end %>
-            <hr>
+            <br>
           </div>
 
         </div>

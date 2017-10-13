@@ -627,11 +627,11 @@ class ProtocolsController < ApplicationController
     @db_json['name'] = sanitize_input(params['protocol']['name'])
     # since scinote only has description field, and protocols.io has many others
     # ,here i am putting everything important from protocols.io into description
-    description_string = protocols_io_fill_desc(@json_object)
+    # description_string = protocols_io_fill_desc(@json_object)
     @db_json['authors'] = sanitize_input(params['protocol']['authors'])
     @db_json['created_at'] = sanitize_input(params['protocol']['created_at'])
     @db_json['updated_at'] = sanitize_input(params['protocol']['last_modified'])
-    @db_json['description'] = sanitize_input(description_string)
+    # @db_json['description'] = sanitize_input(description_string)
     @db_json['steps'] = protocols_io_fill_step(@json_object, @db_json)
     protocol = nil
     respond_to do |format|
@@ -984,9 +984,11 @@ class ProtocolsController < ApplicationController
       append = I18n.t('protocols.protocols_io_import.comp_append.sub_protocol.title') +
                sanitize_input(iterating_key['protocol_name']) +
                I18n.t('protocols.protocols_io_import.comp_append.sub_protocol.author') +
-               sanitize_input(iterating_key['full_name']) +
-               I18n.t('protocols.protocols_io_import.comp_append.general_link') +
-               sanitize_input(iterating_key['link'])
+               sanitize_input(iterating_key['full_name'])
+      if iterating_key['link'].present?
+        append += I18n.t('protocols.protocols_io_import.comp_append.general_link') +
+                  sanitize_input(iterating_key['link'])
+      end
     end
     append
   end
@@ -1004,34 +1006,42 @@ class ProtocolsController < ApplicationController
 
   def protocols_io_fill_desc(json_hash)
     description_array = %w[
-      (before_start warning guidelines manuscript_citation publish_date
-      created_on vendor_name vendor_link keywords tags link)
+      ( before_start warning guidelines manuscript_citation publish_date
+      created_on vendor_name vendor_link keywords tags link )
     ]
-    description_string = sanitize_input(params['protocol']['description'])
+    description_string =
+      if json_hash['description'].present?
+        '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
+          '</strong>' + json_hash['description']
+      else
+        '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
+          '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
+      end
     description_array.each do |e|
       if e == 'created_on' && json_hash[e].present?
-        new_e = e.humanize
+        new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e.to_s + ':  ' +
-          sanitize_input(params['protocol']['created_at'].to_s) + "\n"
+          params['protocol']['created_at'] + '<br>'
       elsif e == 'tags' && json_hash[e].any? && json_hash[e] != ''
-        new_e = e.humanize
+        new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
-          new_e.to_s + ': '
+          new_e + ': '
         json_hash[e].each do |tag|
           description_string +=
-            sanitize_input(tag['tag_name']) + ' , '
+            tag['tag_name'] + ' , '
         end
-        description_string += "\n"
+        description_string += '<br>'
+        # description_string += '<br>'
         # Since protocols description field doesnt show html,i just remove it
         # because its even messier (using Sanitize)
         # what this does is basically appends "FIELD NAME: "+" FIELD VALUE"
         # to description for various fields
       elsif json_hash[e].present?
-        new_e = e.humanize
+        new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
-          new_e.to_s + ':  ' +
-          sanitize_input(json_hash[e].to_s) + "\n"
+          new_e + ': ' +
+          json_hash[e] + '<br>'
       end
     end
     description_string
@@ -1045,8 +1055,14 @@ class ProtocolsController < ApplicationController
     # id 19= safety information ,
     # id 20= regents (materials, like scinote samples kind of)
     create_json['steps'] = {}
-    original_json['steps'].each_with_index do |step,pos| # loop over steps
+    create_json['steps']['0'] = {}
+    create_json['steps']['0']['position'] = 0
+    create_json['steps']['0']['name'] = 'Protocol info'
+    create_json['steps']['0']['description'] =
+      sanitize_input(protocols_io_fill_desc(original_json).html_safe)
+    original_json['steps'].each_with_index do |step,pos_orig| # loop over steps
       # position of step (first, second.... etc),
+      pos = pos_orig + 1
       create_json['steps'][pos.to_s] = {} # the json we will insert into db
       create_json['steps'][pos.to_s]['position'] = pos
       unless create_json['steps'][pos.to_s].key?('description')
