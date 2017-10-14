@@ -1533,6 +1533,7 @@ en:
       restore_unauthorized: "You do not have permission to restore selected protocols."
       restore_error: "Error occured while restoring selected protocols."
       row_renamed_html: "%{old_name}<i> to </i>%{new_name}"
+      row_renamed_html_protocolsio: " <i> to </i> "
       no_protocol_name: "(no name)"
       create:
         title: "Create new protocol"
@@ -1562,6 +1563,7 @@ en:
         title: "Import results"
         message_failed: "Failed to import %{nr} protocol/s."
         message_ok: "Successfully imported %{nr} protocol/s."
+        message_ok_protocolsio: "Successfully imported protocol from protocols.io "
         row_success: "Imported"
         row_renamed: "Imported & renamed"
         row_failed: "Failed"

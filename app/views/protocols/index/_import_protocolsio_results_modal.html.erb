@@ -8,22 +8,53 @@
         </h4>
       </div>
       <div class="modal-body">
+        <% type = (params[:type].to_sym == :public ? :in_repository_public : :in_repository_private) %>
+        <% renamed_name = nil %>
+        <% counter = 1 %>
+        <% loop do %>
+        <% #byebug ,protocol_type: type %>
+          <% if Protocol.where(name: @db_json['name']+' ('+counter.to_s+')',team: current_team,added_by: current_user).exists?   %>
+            <% renamed_name = @db_json['name']+' ('+counter.to_s+')'%>
+            <% counter +=1 %>
+          <% else %>
+            <% break %>
+          <% end %>
+        <% end %>
+        <% unless renamed_name  %>
         <div style="display: block;">
-          <div data-val="message">Successfully imported protocol from protocols.io </div>
+          <div data-val="message"><%= t("protocols.index.import_results.message_ok_protocolsio")%></div>
         </div>
         <div style="display: block;">
           <div class="well well-sm well-protocols-results">
             <ul data-hold="items">
             <div style="display: block;">
               <li>
-            <span class="label label-success">Imported</span>
+            <span class="label label-success"><%= t("protocols.index.import_results.row_success") %></span>
             <span data-val="message"><%= @db_json['name'] %></span>
               </li>
             </div>
             </ul>
           </div>
         </div>
+        <% else %>
+        <div style="display: block;">
+          <div data-val="message"><%= t("protocols.index.import_results.message_ok_protocolsio")%></div>
         </div>
+        <div style="display: block;">
+          <div class="well well-sm well-protocols-results">
+            <ul data-hold="items">
+              <div style="display: block;">
+                <li>
+                  <span class="label label-warning"><%= t("protocols.index.import_results.row_renamed") %></span>
+                  <span data-val="message"><%= @db_json['name']+t("protocols.index.row_renamed_html_protocolsio")+ renamed_name%></span>
+                </li>
+              </div>
+            </ul>
+          </div>
+        </div>
+        <% end %>
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><%= t("general.cancel") %></button>
       </div>
