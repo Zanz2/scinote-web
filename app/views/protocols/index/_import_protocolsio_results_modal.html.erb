@@ -1,0 +1,32 @@
+<div class="modal" id="import-protocolsio-results-modal" role="dialog" aria-labelledby="import-results-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"></button>
+        <h4 class="modal-title" id="import-results-modal-label">
+          <%= t("protocols.index.import_results.title") %>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div style="display: block;">
+          <div data-val="message">Successfully imported protocol from protocols.io </div>
+        </div>
+        <div style="display: block;">
+          <div class="well well-sm well-protocols-results">
+            <ul data-hold="items">
+            <div style="display: block;">
+              <li>
+            <span class="label label-success">Imported</span>
+            <span data-val="message"><%= @db_json['name'] %></span>
+              </li>
+            </div>
+            </ul>
+          </div>
+        </div>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><%= t("general.cancel") %></button>
+      </div>
+    </div>
+  </div>
+</div>

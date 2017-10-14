@@ -903,7 +903,11 @@ class ProtocolsController < ApplicationController
   def protocolsio_step_description_populate(iterating_key)
     append = '<br>' + sanitize_input(iterating_key) + '<br>' if iterating_key.present?
     append = I18n.t('protocols.protocols_io_import.comp_append.missing_desc') if iterating_key.blank?
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_title_populate(iterating_key)
@@ -913,7 +917,11 @@ class ProtocolsController < ApplicationController
       else
         I18n.t('protocols.protocols_io_import.comp_append.missing_step')
       end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_expected_result_populate(iterating_key)
@@ -922,7 +930,11 @@ class ProtocolsController < ApplicationController
         I18n.t('protocols.protocols_io_import.comp_append.expected_result') +
         sanitize_input(iterating_key) + '<br>'
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_software_package_populate(iterating_key)
@@ -947,7 +959,11 @@ class ProtocolsController < ApplicationController
                sanitize_input(iterating_key['os_name']) + ' , ' +
                sanitize_input(iterating_key['os_version'])
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_dataset_populate(iterating_key)
@@ -958,7 +974,11 @@ class ProtocolsController < ApplicationController
                I18n.t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link'])
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_command_populate(iterating_key)
@@ -974,7 +994,11 @@ class ProtocolsController < ApplicationController
                sanitize_input(iterating_key['os_name']) +
                ' , ' + iterating_key['os_version']
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_attached_sub_protocol_populate(iterating_key)
@@ -990,7 +1014,11 @@ class ProtocolsController < ApplicationController
                   sanitize_input(iterating_key['link'])
       end
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocolsio_step_safety_information_populate(iterating_key)
@@ -1001,7 +1029,11 @@ class ProtocolsController < ApplicationController
                I18n.t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link'])
     end
-    append
+    if append.present?
+      append
+    else
+      ''
+    end
   end
 
   def protocols_io_fill_desc(json_hash)
@@ -1017,6 +1049,7 @@ class ProtocolsController < ApplicationController
         '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
           '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
       end
+    description_string += '<br>'
     description_array.each do |e|
       if e == 'created_on' && json_hash[e].present?
         new_e = '<strong>' + e.humanize + '</strong>'

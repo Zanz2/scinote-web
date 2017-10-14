@@ -3,6 +3,16 @@
    max: Constants::NAME_MAX_LENGTH, min: Constants::NAME_MIN_LENGTH) %>');
 <% else %>
   $('#modal-import-json-protocol-preview').modal('hide');
+  <% if remotipart_submitted? %> <%# a workaround to a bug with remotipart, that caused alot of headache, courtesy of github.com/dhampik %>
+    $('#protocolsio-results-modal-target').html(
+      "<%= j "#{render(:partial => 'protocols/index/import_protocolsio_results_modal')}" %>"
+    );
+  <% else %>
+    $('#protocolsio-results-modal-target').html(
+      "<%= j render(:partial => 'protocols/index/import_protocolsio_results_modal') %>"
+    );
+  <% end %>
   $('#protocols_io_form').trigger("reset");
   protocolsDatatable.ajax.reload();
+  $('#import-protocolsio-results-modal').modal('show');
 <% end %>
