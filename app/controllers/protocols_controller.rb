@@ -1138,6 +1138,23 @@ class ProtocolsController < ApplicationController
         end # case end
       end # finished looping over step components
     end # steps
+    protocolsio_string_to_table_element(' <table style=\"width:100%\">
+  <tr>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Age</th>
+  </tr>
+  <tr>
+    <td>Jill</td>
+    <td>Smith</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td>Eve</td>
+    <td>Jackson</td>
+    <td>94</td>
+  </tr>
+</table> ')
     create_json['steps']
   end
 
@@ -1151,17 +1168,17 @@ class ProtocolsController < ApplicationController
     )
     tables = {}
     table_counter = 0
-    table_strings = table_regex.scan(description_string)
+    table_strings = description_string.scan(table_regex)
     byebug
     table_strings.each do |table|
       tables[table_counter.to_s] = {}
       tr_counter = 0
-      tr_strings = tr_regex.scan(table)
+      tr_strings = table.scan(tr_regex)
       contents = {}
       contents['data'] = []
       tr_strings.each do |tr|
         td_counter = 0
-        td_strings = td_regex.scan(tr)
+        td_strings = tr.scan(td_regex)
         td_strings.each do |td|
           contents['data'][tr_counter].push(td)
           td_counter += 1
