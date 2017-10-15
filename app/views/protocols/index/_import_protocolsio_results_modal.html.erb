@@ -8,10 +8,7 @@
         </h4>
       </div>
       <div class="modal-body">
-        <%# type = (params[:type].to_sym == :public ? 3 : 2) %>
         <% renamed_name = nil %>
-        <%# counter = 1 %>
-        <%# byebug %>
         <% protocol = Protocol.find(@prot_id)  %>
         <% if protocol.name != @db_json['name'] %>
         <% renamed_name = protocol.name %>
