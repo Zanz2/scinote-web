@@ -1037,6 +1037,11 @@ class ProtocolsController < ApplicationController
     end
   end
 
+  def protocolsio_string_to_table_element(description_string)
+    sub_string = %r{/<TAG\b[^>]*>(.*?)<\/TAG>/}.match(description_string)
+    return string_without_tables, tables_hash
+  end
+
   def protocols_io_fill_desc(json_hash)
     description_array = %w[
       ( before_start warning guidelines manuscript_citation publish_date
