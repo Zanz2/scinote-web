@@ -1411,6 +1411,7 @@ en:
         key_wrd: "Keywords:"
         tags: "Tags:"
       comp_append:
+        table_moved: "<strong>There was a table here, it was moved to scinote table elements</strong>"
         missing_step: "Step"
         missing_desc: "Description missing"
         general_link: "<br>Link: "

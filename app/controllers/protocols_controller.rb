@@ -1037,11 +1037,6 @@ class ProtocolsController < ApplicationController
     end
   end
 
-  def protocolsio_string_to_table_element(description_string)
-    sub_string = %r{/<TAG\b[^>]*>(.*?)<\/TAG>/}.match(description_string)
-    return string_without_tables, tables_hash
-  end
-
   def protocols_io_fill_desc(json_hash)
     description_array = %w[
       ( before_start warning guidelines manuscript_citation publish_date
@@ -1144,6 +1139,40 @@ class ProtocolsController < ApplicationController
       end # finished looping over step components
     end # steps
     create_json['steps']
+  end
+
+  def protocolsio_string_to_table_element(description_string)
+    table_regex = /<table\b[^>]*>(.*?)<\/table>/
+    tr_regex = /<tr\b[^>]*>(.*?)<\/tr>/
+    td_regex = /<td\b[^>]*>(.*?)<\/td>/
+    string_without_tables = description_string.gsub!(
+      table_regex,
+      I18n.t('protocols.protocols_io_import.comp_append.table_moved').html_safe
+    )
+    tables = {}
+    table_counter = 0
+    table_strings = table_regex.scan(description_string)
+    byebug
+    table_strings.each do |table|
+      tables[table_counter.to_s] = {}
+      tr_counter = 0
+      tr_strings = tr_regex.scan(table)
+      contents = {}
+      contents['data'] = []
+      tr_strings.each do |tr|
+        td_counter = 0
+        td_strings = td_regex.scan(tr)
+        td_strings.each do |td|
+          contents['data'][tr_counter].push(td)
+          td_counter += 1
+          break if td_counter >= 5
+        end
+        tr_counter += 1
+      end
+      tables[table_counter.to_s]['contents'] = Base64.encode64(contents)
+      table_counter += 1
+    end
+    return string_without_tables, tables
   end
 
   def move_protocol(action)
