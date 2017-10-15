@@ -8,17 +8,13 @@
         </h4>
       </div>
       <div class="modal-body">
-        <% type = (params[:type].to_sym == :public ? :in_repository_public : :in_repository_private) %>
+        <%# type = (params[:type].to_sym == :public ? 3 : 2) %>
         <% renamed_name = nil %>
-        <% counter = 1 %>
-        <% loop do %>
-        <% #byebug ,protocol_type: type %>
-          <% if Protocol.where(name: @db_json['name']+' ('+counter.to_s+')',team: current_team,added_by: current_user).exists?   %>
-            <% renamed_name = @db_json['name']+' ('+counter.to_s+')'%>
-            <% counter +=1 %>
-          <% else %>
-            <% break %>
-          <% end %>
+        <%# counter = 1 %>
+        <%# byebug %>
+        <% protocol = Protocol.find(@prot_id)  %>
+        <% if protocol.name != @db_json['name'] %>
+        <% renamed_name = protocol.name %>
         <% end %>
         <% unless renamed_name  %>
         <div style="display: block;">
@@ -45,8 +41,8 @@
             <ul data-hold="items">
               <div style="display: block;">
                 <li>
-                  <span class="label label-warning"><%= t("protocols.index.import_results.row_renamed") %></span>
-                  <span data-val="message"><%= @db_json['name']+t("protocols.index.row_renamed_html_protocolsio")+ renamed_name%></span>
+                  <span class="label label-warning"><%= t("protocols.index.import_results.row_renamed")%></span>
+                  <span data-val="message"><%= @db_json['name']+t("protocols.index.row_renamed_html_protocolsio").html_safe + renamed_name%></span>
                 </li>
               </div>
             </ul>

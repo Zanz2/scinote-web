@@ -642,6 +642,7 @@ class ProtocolsController < ApplicationController
           protocol = import_new_protocol(
             @db_json, current_team, params[:type].to_sym, current_user
           )
+          @prot_id = protocol.id
         rescue Exception
           transaction_error = true
           raise ActiveRecord:: Rollback
