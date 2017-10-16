@@ -1138,11 +1138,11 @@ class ProtocolsController < ApplicationController
         end # case end
       end # finished looping over step components
     end # steps
-    protocolsio_string_to_table_element(' <table style=\"width:100%\">
+    test = protocolsio_string_to_table_element(' <table style=\"width:100%\">
   <tr>
-    <th>Firstname</th>
-    <th>Lastname</th>
-    <th>Age</th>
+    <td>Firstname</td>
+    <td>Lastname</td>
+    <td>Age</td>
   </tr>
   <tr>
     <td>Jill</td>
@@ -1155,41 +1155,45 @@ class ProtocolsController < ApplicationController
     <td>94</td>
   </tr>
 </table> ')
+byebug
     create_json['steps']
   end
 
   def protocolsio_string_to_table_element(description_string)
-    table_regex = /<table\b[^>]*>(.*?)<\/table>/
-    tr_regex = /<tr\b[^>]*>(.*?)<\/tr>/
-    td_regex = /<td\b[^>]*>(.*?)<\/td>/
-    string_without_tables = description_string.gsub!(
-      table_regex,
-      I18n.t('protocols.protocols_io_import.comp_append.table_moved').html_safe
-    )
+    description_string = description_string.delete "\n", "\t", "\r", "\f"
+    table_regex = /<table\b[^>]*>(.*?)<\/table>/m
+    tr_regex = /<tr\b[^>]*>(.*?)<\/tr>/m
+    td_regex = /<td\b[^>]*>(.*?)<\/td>/m
+    # table_pattern = description_string.scan(table_regex)
+    # string_without_tables = description_string.gsub(
+    #   table_pattern,
+    #   I18n.t('protocols.protocols_io_import.comp_append.table_moved').html_safe
+    # )
     tables = {}
     table_counter = 0
     table_strings = description_string.scan(table_regex)
-    byebug
     table_strings.each do |table|
       tables[table_counter.to_s] = {}
       tr_counter = 0
-      tr_strings = table.scan(tr_regex)
+      tr_strings = table[0].scan(tr_regex)
       contents = {}
       contents['data'] = []
       tr_strings.each do |tr|
         td_counter = 0
-        td_strings = tr.scan(td_regex)
+        td_strings = tr[0].scan(td_regex)
+        contents['data'][tr_counter] = []
         td_strings.each do |td|
-          contents['data'][tr_counter].push(td)
+          contents['data'][tr_counter].push(td[0])
           td_counter += 1
           break if td_counter >= 5
         end
         tr_counter += 1
       end
-      tables[table_counter.to_s]['contents'] = Base64.encode64(contents)
+      tables[table_counter.to_s]['contents'] = Base64.encode64(contents.to_s)
       table_counter += 1
     end
-    return string_without_tables, tables
+    # return string_without_tables, tables
+    tables
   end
 
   def move_protocol(action)
