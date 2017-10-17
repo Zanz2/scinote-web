@@ -903,7 +903,7 @@ class ProtocolsController < ApplicationController
 
   def protocolsio_step_description_populate(iterating_key)
     append = '<br>' + sanitize_input(iterating_key) + '<br>' if iterating_key.present?
-    append = I18n.t('protocols.protocols_io_import.comp_append.missing_desc') if iterating_key.blank?
+    append = t('protocols.protocols_io_import.comp_append.missing_desc') if iterating_key.blank?
     if append.present?
       append
     else
@@ -916,7 +916,7 @@ class ProtocolsController < ApplicationController
       if iterating_key.present?
         sanitize_input(iterating_key)
       else
-        I18n.t('protocols.protocols_io_import.comp_append.missing_step')
+        t('protocols.protocols_io_import.comp_append.missing_step')
       end
     if append.present?
       append
@@ -928,7 +928,7 @@ class ProtocolsController < ApplicationController
   def protocolsio_step_expected_result_populate(iterating_key)
     if iterating_key.present?
       append =
-        I18n.t('protocols.protocols_io_import.comp_append.expected_result') +
+        t('protocols.protocols_io_import.comp_append.expected_result') +
         sanitize_input(iterating_key) + '<br>'
     end
     if append.present?
@@ -946,17 +946,17 @@ class ProtocolsController < ApplicationController
        iterating_key['repository'] &&
        iterating_key['os_name'] &&
        iterating_key['os_version']
-      append = I18n.t('protocols.protocols_io_import.comp_append.soft_packg.title') +
+      append = t('protocols.protocols_io_import.comp_append.soft_packg.title') +
                sanitize_input(iterating_key['name']) +
-               I18n.t('protocols.protocols_io_import.comp_append.soft_packg.dev') +
+               t('protocols.protocols_io_import.comp_append.soft_packg.dev') +
                sanitize_input(iterating_key['developer']) +
-               I18n.t('protocols.protocols_io_import.comp_append.soft_packg.vers') +
+               t('protocols.protocols_io_import.comp_append.soft_packg.vers') +
                sanitize_input(iterating_key['version']) +
-               I18n.t('protocols.protocols_io_import.comp_append.general_link') +
+               t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link']) +
-               I18n.t('protocols.protocols_io_import.comp_append.soft_packg.repo') +
+               t('protocols.protocols_io_import.comp_append.soft_packg.repo') +
                sanitize_input(iterating_key['repository']) +
-               I18n.t('protocols.protocols_io_import.comp_append.soft_packg.os') +
+               t('protocols.protocols_io_import.comp_append.soft_packg.os') +
                sanitize_input(iterating_key['os_name']) + ' , ' +
                sanitize_input(iterating_key['os_version'])
     end
@@ -970,9 +970,9 @@ class ProtocolsController < ApplicationController
   def protocolsio_step_dataset_populate(iterating_key)
     if iterating_key['name'].present? &&
        iterating_key['link']
-      append = I18n.t('protocols.protocols_io_import.comp_append.dataset.title') +
+      append = t('protocols.protocols_io_import.comp_append.dataset.title') +
                sanitize_input(iterating_key['name']) +
-               I18n.t('protocols.protocols_io_import.comp_append.general_link') +
+               t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link'])
     end
     if append.present?
@@ -987,11 +987,11 @@ class ProtocolsController < ApplicationController
        iterating_key['description'] &&
        iterating_key['os_name'] &&
        iterating_key['os_version']
-      append = I18n.t('protocols.protocols_io_import.comp_append.command.title') +
+      append = t('protocols.protocols_io_import.comp_append.command.title') +
                sanitize_input(iterating_key['name']) +
-               I18n.t('protocols.protocols_io_import.comp_append.command.desc') +
+               t('protocols.protocols_io_import.comp_append.command.desc') +
                sanitize_input(iterating_key['description']) +
-               I18n.t('protocols.protocols_io_import.comp_append.command.os') +
+               t('protocols.protocols_io_import.comp_append.command.os') +
                sanitize_input(iterating_key['os_name']) +
                ' , ' + iterating_key['os_version']
     end
@@ -1006,12 +1006,12 @@ class ProtocolsController < ApplicationController
     if iterating_key['protocol_name'].present? &&
        iterating_key['full_name'] &&
        iterating_key['link']
-      append = I18n.t('protocols.protocols_io_import.comp_append.sub_protocol.title') +
+      append = t('protocols.protocols_io_import.comp_append.sub_protocol.title') +
                sanitize_input(iterating_key['protocol_name']) +
-               I18n.t('protocols.protocols_io_import.comp_append.sub_protocol.author') +
+               t('protocols.protocols_io_import.comp_append.sub_protocol.author') +
                sanitize_input(iterating_key['full_name'])
       if iterating_key['link'].present?
-        append += I18n.t('protocols.protocols_io_import.comp_append.general_link') +
+        append += t('protocols.protocols_io_import.comp_append.general_link') +
                   sanitize_input(iterating_key['link'])
       end
     end
@@ -1025,9 +1025,9 @@ class ProtocolsController < ApplicationController
   def protocolsio_step_safety_information_populate(iterating_key)
     if iterating_key['body'].present? &&
        iterating_key['link']
-      append = I18n.t('protocols.protocols_io_import.comp_append.safety_infor.title') +
+      append = t('protocols.protocols_io_import.comp_append.safety_infor.title') +
                sanitize_input(iterating_key['body']) +
-               I18n.t('protocols.protocols_io_import.comp_append.general_link') +
+               t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link'])
     end
     if append.present?
@@ -1137,8 +1137,10 @@ class ProtocolsController < ApplicationController
             protocolsio_step_safety_information_populate(key['source_data'])
         end # case end
       end # finished looping over step components
+      create_json['steps'][pos.to_s]['tables'], table_string = protocolsio_string_to_table_element(create_json['steps'][pos.to_s]['description'])
+      create_json['steps'][pos.to_s]['description'] = table_string
     end # steps
-    test = protocolsio_string_to_table_element(' <table style=\"width:100%\">
+    test_table, test_string = protocolsio_string_to_table_element(' <table style=\"width:100%\">
   <tr>
     <td>Firstname</td>
     <td>Lastname</td>
@@ -1154,21 +1156,44 @@ class ProtocolsController < ApplicationController
     <td>Jackson</td>
     <td>94</td>
   </tr>
-</table> ')
+</table> <table style=\"width:100%\">
+<tr>
+<td>Firstname</td>
+<td>Lastname</td>
+<td>Age</td>
+</tr>
+<tr>
+<td>Jill</td>
+<td>Smith</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Eve</td>
+<td>Jackson</td>
+<td>94</td>
+</tr>
+</table>  ')
 byebug
     create_json['steps']
   end
 
   def protocolsio_string_to_table_element(description_string)
-    description_string = description_string.delete "\n", "\t", "\r", "\f"
-    table_regex = /<table\b[^>]*>(.*?)<\/table>/m
-    tr_regex = /<tr\b[^>]*>(.*?)<\/tr>/m
-    td_regex = /<td\b[^>]*>(.*?)<\/td>/m
-    # table_pattern = description_string.scan(table_regex)
-    # string_without_tables = description_string.gsub(
-    #   table_pattern,
-    #   I18n.t('protocols.protocols_io_import.comp_append.table_moved').html_safe
-    # )
+    description_string.delete! "\n"
+    description_string.delete! "\t"
+    description_string.delete! "\r"
+    description_string.delete! "\f"
+    table_whole_regex = %r{(<table\b[^>]*>.*?<\/table>)}m
+    table_regex = %r{<table\b[^>]*>(.*?)<\/table>}m
+    tr_regex = %r{<tr\b[^>]*>(.*?)<\/tr>}m
+    td_regex = %r{<td\b[^>]*>(.*?)<\/td>}m
+    table_pattern_array = description_string.scan(table_whole_regex)
+    string_without_tables = description_string
+    table_pattern_array.each do |table_pattern|
+      string_without_tables = string_without_tables.gsub(
+        table_pattern[0],
+        t('protocols.protocols_io_import.comp_append.table_moved').html_safe
+      )
+    end
     tables = {}
     table_counter = 0
     table_strings = description_string.scan(table_regex)
@@ -1190,10 +1215,11 @@ byebug
         tr_counter += 1
       end
       tables[table_counter.to_s]['contents'] = Base64.encode64(contents.to_s)
+      tables[table_counter.to_s]['name'] = 'Table'
       table_counter += 1
     end
     # return string_without_tables, tables
-    tables
+    return tables, string_without_tables
   end
 
   def move_protocol(action)
