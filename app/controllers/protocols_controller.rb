@@ -1140,40 +1140,6 @@ class ProtocolsController < ApplicationController
       create_json['steps'][pos.to_s]['tables'], table_string = protocolsio_string_to_table_element(create_json['steps'][pos.to_s]['description'])
       create_json['steps'][pos.to_s]['description'] = table_string
     end # steps
-    test_table, test_string = protocolsio_string_to_table_element(' <table style=\"width:100%\">
-  <tr>
-    <td>Firstname</td>
-    <td>Lastname</td>
-    <td>Age</td>
-  </tr>
-  <tr>
-    <td>Jill</td>
-    <td>Smith</td>
-    <td>50</td>
-  </tr>
-  <tr>
-    <td>Eve</td>
-    <td>Jackson</td>
-    <td>94</td>
-  </tr>
-</table> <table style=\"width:100%\">
-<tr>
-<td>Firstname</td>
-<td>Lastname</td>
-<td>Age</td>
-</tr>
-<tr>
-<td>Jill</td>
-<td>Smith</td>
-<td>50</td>
-</tr>
-<tr>
-<td>Eve</td>
-<td>Jackson</td>
-<td>94</td>
-</tr>
-</table>  ')
-byebug
     create_json['steps']
   end
 
@@ -1214,8 +1180,10 @@ byebug
         end
         tr_counter += 1
       end
-      tables[table_counter.to_s]['contents'] = Base64.encode64(contents.to_s)
-      tables[table_counter.to_s]['name'] = 'Table'
+      tables[table_counter.to_s]['contents'] = Base64.encode64(
+        contents.to_s.sub('=>', ':')
+      )
+      tables[table_counter.to_s]['name'] = nil
       table_counter += 1
     end
     # return string_without_tables, tables
