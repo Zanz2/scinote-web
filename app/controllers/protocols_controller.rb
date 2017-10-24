@@ -1060,8 +1060,15 @@ class ProtocolsController < ApplicationController
     # id 9 = dataset, id 15 = command, id 18 = attached sub protocol
     # id 19= safety information ,
     # id 20= regents (materials, like scinote samples kind of)
-    original_json['steps'].each_with_index do |step, i| # loop over steps
+    newj['0'] = {}
+    newj['0']['position'] = 0
+    newj['0']['name'] = 'Protocol info'
+    newj['0']['description'] = sanitize_input(
+      protocols_io_fill_desc(original_json).html_safe
+    )
+    original_json['steps'].each_with_index do |step, pos_orig| # loop over steps
       # position of step (first, second.... etc),
+      i = pos_orig + 1
       newj[i.to_s] = {} # the json we will insert into db
       newj[i.to_s]['position'] = i
       newj[i.to_s]['description'] = '' unless newj[i.to_s].key?('description')
