@@ -25,7 +25,7 @@ module ProtocolsIoTableHelper
       tables[table_counter.to_s]['name'] = nil
     end
     # return string_without_tables, tables
-    return tables, string_without_tables
+    return tables, string_without_tables.html_safe
   end
 
   def string_html_table_remove(description_string)
@@ -39,6 +39,6 @@ module ProtocolsIoTableHelper
         t('protocols.protocols_io_import.comp_append.table_moved').html_safe
       )
     end
-    string_without_tables
+    string_without_tables.html_safe
   end
 end

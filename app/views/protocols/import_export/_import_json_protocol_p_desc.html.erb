@@ -18,25 +18,30 @@
         <br>
         <% prot_info_string = '' %>
         <% protocol_table_elements_array = [] %>
+        <% if json_object['description'].present? %>
+          <% prot_info_string += (json_object['description']) %>
+          <strong><%= t('protocols.protocols_io_import.preview.prot_desc') %></strong>
+          <%= sanitize_input(string_html_table_remove(json_object['description']).html_safe, ['img']) %><br>
+        <% end %>
         <% if json_object['before_start'].present? %>
           <% prot_info_string += (json_object['before_start']) %>
           <strong><%= t('protocols.protocols_io_import.preview.b_s_p') %></strong>
-          <%= sanitize_input(string_html_table_remove(json_object['before_start']).html_safe) %><br>
+          <%= sanitize_input(string_html_table_remove(json_object['before_start']).html_safe, ['img']) %><br>
         <% end %>
         <% if json_object['warning'].present? %>
           <% prot_info_string += (json_object['warning']) %>
           <strong><%= t('protocols.protocols_io_import.preview.warn') %></strong>
-          <%= sanitize_input(string_html_table_remove(json_object['warning']).html_safe) %><br>
+          <%= sanitize_input(string_html_table_remove(json_object['warning']).html_safe, ['img']) %><br>
         <% end %>
         <% if json_object['guidelines'].present? %>
           <% prot_info_string += (json_object['guidelines']) %>
           <strong><%= t('protocols.protocols_io_import.preview.guideln') %></strong>
-          <%= sanitize_input(string_html_table_remove(json_object['guidelines']).html_safe) %><br>
+          <%= sanitize_input(string_html_table_remove(json_object['guidelines']).html_safe, ['img']) %><br>
         <% end %>
         <% if json_object['manuscript_citation'].present? %>
           <% prot_info_string += (json_object['manuscript_citation']) %>
           <strong><%= t('protocols.protocols_io_import.preview.manu_cit') %></strong>
-          <%= sanitize_input(string_html_table_remove(json_object['manuscript_citation']).html_safe) %><br>
+          <%= sanitize_input(string_html_table_remove(json_object['manuscript_citation']).html_safe, ['img']) %><br>
         <% end %>
         <% if json_object['publish_date'].present? %>
           <strong><%= t('protocols.protocols_io_import.preview.pbl_date') %></strong>

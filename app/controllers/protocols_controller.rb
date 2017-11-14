@@ -920,7 +920,7 @@ class ProtocolsController < ApplicationController
   # pio_stp_x means protocols io step (id of component) parser
   def pio_stp_1(iterating_key) # protocols io description parser
     br = '<br>'
-    append = br + sanitize_input(iterating_key) + br if iterating_key.present?
+    append = br + sanitize_input(iterating_key, ['img']) + br if iterating_key.present?
     if iterating_key.blank?
       append = t('protocols.protocols_io_import.comp_append.missing_desc')
     end
@@ -936,7 +936,7 @@ class ProtocolsController < ApplicationController
     if iterating_key.present?
       append =
         t('protocols.protocols_io_import.comp_append.expected_result') +
-        sanitize_input(iterating_key) + '<br>'
+        sanitize_input(iterating_key, ['img']) + '<br>'
       return append
     end
     ''
@@ -972,7 +972,7 @@ class ProtocolsController < ApplicationController
     if iterating_key['name'].present? &&
        iterating_key['link']
       append = t('protocols.protocols_io_import.comp_append.dataset.title') +
-               sanitize_input(iterating_key['name']) +
+               sanitize_input(iterating_key['name'], ['img']) +
                t('protocols.protocols_io_import.comp_append.general_link') +
                sanitize_input(iterating_key['link'])
       return append
@@ -988,7 +988,7 @@ class ProtocolsController < ApplicationController
       append = t('protocols.protocols_io_import.comp_append.command.title') +
                sanitize_input(iterating_key['name']) +
                t('protocols.protocols_io_import.comp_append.command.desc') +
-               sanitize_input(iterating_key['description']) +
+               sanitize_input(iterating_key['description'], ['img']) +
                t('protocols.protocols_io_import.comp_append.command.os') +
                sanitize_input(iterating_key['os_name']) +
                ' , ' + iterating_key['os_version']
@@ -1024,7 +1024,7 @@ class ProtocolsController < ApplicationController
         t(
           'protocols.protocols_io_import.comp_append.safety_infor.title'
         ) +
-        sanitize_input(iterating_key['body']) +
+        sanitize_input(iterating_key['body'], ['img']) +
         t('protocols.protocols_io_import.comp_append.general_link') +
         sanitize_input(iterating_key['link'])
       return append
@@ -1040,7 +1040,9 @@ class ProtocolsController < ApplicationController
     description_string =
       if json_hash['description'].present?
         '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
-          '</strong>' + sanitize_input(json_hash['description'].html_safe)
+          '</strong>' + sanitize_input(
+            json_hash['description'].html_safe, ['img']
+          )
       else
         '<strong>' + t('protocols.protocols_io_import.preview.prot_desc') +
           '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
@@ -1069,7 +1071,7 @@ class ProtocolsController < ApplicationController
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e.to_s + ':  ' +
-          sanitize_input(json_hash[e].html_safe) + '<br>'
+          sanitize_input(json_hash[e].html_safe, ['img']) + '<br>'
       end
     end
     description_string
@@ -1087,7 +1089,7 @@ class ProtocolsController < ApplicationController
     newj['0']['position'] = 0
     newj['0']['name'] = 'Protocol info'
     newj['0']['tables'], table_str = protocolsio_string_to_table_element(
-      sanitize_input(protocols_io_fill_desc(original_json).html_safe)
+      sanitize_input(protocols_io_fill_desc(original_json).html_safe, ['img'])
     )
     newj['0']['description'] = table_str
     original_json['steps'].each_with_index do |step, pos_orig| # loop over steps
@@ -1123,7 +1125,7 @@ class ProtocolsController < ApplicationController
         end # case end
       end # finished looping over step components
       newj[i.to_s]['tables'], table_str = protocolsio_string_to_table_element(
-        newj[i.to_s]['description']
+        sanitize_input(newj[i.to_s]['description'].html_safe, ['img'])
       )
       newj[i.to_s]['description'] = table_str
     end # steps
