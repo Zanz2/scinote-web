@@ -2,6 +2,7 @@
 <%  whitelist_complex=['8','9','15','18','19','20']%>
 <%  step_table_elements_array = [] %>
 <% json_object['steps'].each_with_index do |step,counter_orig| %>
+<% @remaining = 10000 %>
 <% counter = counter_orig + 2 %>
 <div style="display: block;">
   <hr>

@@ -82,6 +82,21 @@ module ProtocolsIoHelper
 
   # These can easily be adjusted if more room for an attribute is needed.
   # (Subtract from one, add to another)
+  # 6,4,4,4,1.5,0.25,1.5,1.5,2,2
+  # 8,2,2,4,4
+
+  def pio_eval_attr(tekst, percentage_min)
+    max = 10000
+    allowed_min_attr = max * percentage_min
+    text_end = allowed_min_attr + @remaining - 60
+    if tekst.length - allowed_min_attr > remaining
+      tekst = tekst[0..text_end] + t('protocols.protocols_io_import.too_long')
+      @toolong = true
+    end
+    @remaining = @remaining - (tekst.length - allowed_min_attr)
+    tekst
+  end
+
   def pio_eval_p_desc_len(tekst)
     max = 10000
     allowed_max_attr = max * 0.26
