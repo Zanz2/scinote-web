@@ -64,7 +64,6 @@ module ProtocolsIoHelper
       )
       tables[table_counter.to_s]['name'] = nil
     end
-    # return string_without_tables, tables
     return tables, string_without_tables
   end
 
@@ -154,7 +153,6 @@ module ProtocolsIoHelper
         string_html_table_remove(not_null(attribute_text1))
       )
     end
-    # intercept tables here, before they are shortened
     pio_eval_len(
       attribute_text,
       size
@@ -318,7 +316,8 @@ module ProtocolsIoHelper
         # append is the string that we append values into for description
         # pio_stp_x means protocols io step (id of component) parser
         case key['component_type_id']
-        when '1'
+        when '1'  # intercept tables here, before they are shortened
+                  # all of the below
           newj[i.to_s]['description'] += pio_stp_1(key['data'])
         when '6'
           newj[i.to_s]['name'] = pio_stp_6(key['data'])
