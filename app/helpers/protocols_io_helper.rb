@@ -154,6 +154,7 @@ module ProtocolsIoHelper
         string_html_table_remove(not_null(attribute_text1))
       )
     end
+    # intercept tables here, before they are shortened
     pio_eval_len(
       attribute_text,
       size
@@ -175,6 +176,7 @@ module ProtocolsIoHelper
       else
         ' , '
       end
+    # intercept tables here, before they are shortened
     output_string += prepare_for_view(
       attribute_text, ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_SMALL
     )
@@ -185,7 +187,7 @@ module ProtocolsIoHelper
   def pio_stp_1(iterating_key) # protocols io description parser
     br = '<br>'
     append =
-      if iterating_key.present?
+      if iterating_key.present?# intercept tables here, before they are shortened
         br +
         prepare_for_view(
           iterating_key,
@@ -207,7 +209,7 @@ module ProtocolsIoHelper
     if iterating_key.present?
       append =
         t('protocols.protocols_io_import.comp_append.expected_result') +
-        prepare_for_view(
+        prepare_for_view(# intercept tables here, before they are shortened
           iterating_key, ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_SMALL
         ) +
         '<br>'
@@ -222,7 +224,7 @@ module ProtocolsIoHelper
     parse_elements_array.each do |element|
       return '' unless iterating_key[element]
       append += fill_attributes(
-        element,
+        element,# intercept tables here, before they are shortened
         iterating_key[element],
         en_local_text
       )
@@ -240,7 +242,7 @@ module ProtocolsIoHelper
         '<strong>' + t('protocols.protocols_io_import.preview.description') +
           '</strong>' +
           prepare_for_view(
-            json_hash['description'],
+            json_hash['description'],# intercept tables here, before they are shortened
             ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
           ).html_safe
       else
@@ -275,7 +277,7 @@ module ProtocolsIoHelper
       elsif json_hash[e].present?
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
-          new_e.to_s + ':  ' +
+          new_e.to_s + ':  ' +# intercept tables here, before they are shortened
           pio_eval_prot_desc(
             sanitize_input(json_hash[e]),
             e
