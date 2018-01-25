@@ -231,22 +231,24 @@ module ProtocolsIoHelper
   end
 
   def protocols_io_fill_desc(json_hash)
+    unshortened_string_for_tables = ''
     description_array = %w[
       ( before_start warning guidelines manuscript_citation publish_date
       vendor_name vendor_link keywords tags link created_on )
     ]
-    description_string =
-      if json_hash['description'].present?
-        '<strong>' + t('protocols.protocols_io_import.preview.description') +
-          '</strong>' +
-          prepare_for_view(
-            json_hash['description'],# intercept tables here, before they are shortened
-            ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
-          ).html_safe
-      else
-        '<strong>' + t('protocols.protocols_io_import.preview.description') +
-          '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
-      end
+
+    if json_hash['description'].present?
+      unshortened_string_for_tables += json_hash['description']
+      description_string = '<strong>' + t('protocols.protocols_io_import.preview.description') +
+        '</strong>' +
+        prepare_for_view(
+          json_hash['description'],# intercept tables here, before they are shortened
+          ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
+        ).html_safe
+    else
+      description_string = '<strong>' + t('protocols.protocols_io_import.preview.description') +
+        '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
+    end
     description_string += '<br>'
     description_array.each do |e|
       if e == 'created_on' && json_hash[e].present?
@@ -273,6 +275,7 @@ module ProtocolsIoHelper
         )
         description_string += '<br>'
       elsif json_hash[e].present?
+        unshortened_string_for_tables += json_hash[e]
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
           new_e.to_s + ':  ' +# intercept tables here, before they are shortened
@@ -282,7 +285,7 @@ module ProtocolsIoHelper
           ).html_safe + '<br>'
       end
     end
-    description_string
+    return description_string, unshortened_string_for_tables
   end
 
   def protocols_io_fill_step(original_json, newj)
