@@ -183,6 +183,7 @@ module ProtocolsIoHelper
 
   # pio_stp_x means protocols io step (id of component) parser
   def pio_stp_1(iterating_key) # protocols io description parser
+    byebug
     br = '<br>'
     append =
       if iterating_key.present?# intercept tables here, before they are shortened
@@ -244,7 +245,7 @@ module ProtocolsIoHelper
       description_string = '<strong>' + t('protocols.protocols_io_import.preview.description') +
         '</strong>' +
         prepare_for_view(
-          json_hash['description'],# intercept tables here, before they are shortened
+          json_hash['description'], # intercept tables here, before they are shortened
           ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
         ).html_safe
     else
@@ -280,14 +281,14 @@ module ProtocolsIoHelper
         unshortened_string_for_tables += json_hash[e]
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
-          new_e.to_s + ':  ' +# intercept tables here, before they are shortened
+          new_e.to_s + ':  ' + # intercept tables here, before they are shortened
           pio_eval_prot_desc(
             sanitize_input(json_hash[e]),
             e
           ).html_safe + '<br>'
       end
     end
-    return description_string, unshortened_string_for_tables
+    return description_string # , unshortened_string_for_tables
   end
 
   def protocols_io_guid_reorder_step_json(unordered_step_json)
@@ -324,9 +325,18 @@ module ProtocolsIoHelper
     newj['0']['position'] = 0
     newj['0']['name'] = 'Protocol info'
     @remaining = ProtocolsIoHelper::PIO_P_AVAILABLE_LENGTH
-    newj['0']['tables'], table_str = protocolsio_string_to_table_element(
-      sanitize_input(protocols_io_fill_desc(original_json).html_safe)
+    # , unshortened_tables_string
+    shortened_string = protocols_io_fill_desc(
+      sanitize_input(original_json).html_safe
     )
+
+    newj['0']['tables'] = protocolsio_string_to_table_element(
+      unshortened_tables_string
+    )[0]
+    table_str = protocolsio_string_to_table_element(
+      shortened_string
+    )[1]
+    byebug
     newj['0']['description'] = table_str
     original_json['steps'].each_with_index do |step, pos_orig| # loop over steps
       i = pos_orig + 1
@@ -343,8 +353,8 @@ module ProtocolsIoHelper
         # append is the string that we append values into for description
         # pio_stp_x means protocols io step (id of component) parser
         case key['component_type_id']
-        when '1'  # intercept tables here, before they are shortened
-                  # all of the below
+        when '1' # intercept tables here, before they are shortened
+          # all of the below
           newj[i.to_s]['description'] += pio_stp_1(key['data'])
         when '6'
           newj[i.to_s]['name'] = pio_stp_6(key['data'])
