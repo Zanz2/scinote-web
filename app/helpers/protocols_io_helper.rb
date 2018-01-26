@@ -64,7 +64,6 @@ module ProtocolsIoHelper
       )
       tables[table_counter.to_s]['name'] = nil
     end
-    # return string_without_tables, tables
     return tables, string_without_tables
   end
 
@@ -175,6 +174,7 @@ module ProtocolsIoHelper
       else
         ' , '
       end
+    # intercept tables here, before they are shortened
     output_string += prepare_for_view(
       attribute_text, ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_SMALL
     )
@@ -185,7 +185,7 @@ module ProtocolsIoHelper
   def pio_stp_1(iterating_key) # protocols io description parser
     br = '<br>'
     append =
-      if iterating_key.present?
+      if iterating_key.present?# intercept tables here, before they are shortened
         br +
         prepare_for_view(
           iterating_key,
@@ -207,7 +207,7 @@ module ProtocolsIoHelper
     if iterating_key.present?
       append =
         t('protocols.protocols_io_import.comp_append.expected_result') +
-        prepare_for_view(
+        prepare_for_view(# intercept tables here, before they are shortened
           iterating_key, ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_SMALL
         ) +
         '<br>'
@@ -222,7 +222,7 @@ module ProtocolsIoHelper
     parse_elements_array.each do |element|
       return '' unless iterating_key[element]
       append += fill_attributes(
-        element,
+        element,# intercept tables here, before they are shortened
         iterating_key[element],
         en_local_text
       )
@@ -231,22 +231,24 @@ module ProtocolsIoHelper
   end
 
   def protocols_io_fill_desc(json_hash)
+    unshortened_string_for_tables = ''
     description_array = %w[
       ( before_start warning guidelines manuscript_citation publish_date
       vendor_name vendor_link keywords tags link created_on )
     ]
-    description_string =
-      if json_hash['description'].present?
-        '<strong>' + t('protocols.protocols_io_import.preview.description') +
-          '</strong>' +
-          prepare_for_view(
-            json_hash['description'],
-            ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
-          ).html_safe
-      else
-        '<strong>' + t('protocols.protocols_io_import.preview.description') +
-          '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
-      end
+
+    if json_hash['description'].present?
+      unshortened_string_for_tables += json_hash['description']
+      description_string = '<strong>' + t('protocols.protocols_io_import.preview.description') +
+        '</strong>' +
+        prepare_for_view(
+          json_hash['description'],# intercept tables here, before they are shortened
+          ProtocolsIoHelper::PIO_ELEMENT_RESERVED_LENGTH_MEDIUM
+        ).html_safe
+    else
+      description_string = '<strong>' + t('protocols.protocols_io_import.preview.description') +
+        '</strong>' + t('protocols.protocols_io_import.comp_append.missing_desc')
+    end
     description_string += '<br>'
     description_array.each do |e|
       if e == 'created_on' && json_hash[e].present?
@@ -273,16 +275,17 @@ module ProtocolsIoHelper
         )
         description_string += '<br>'
       elsif json_hash[e].present?
+        unshortened_string_for_tables += json_hash[e]
         new_e = '<strong>' + e.humanize + '</strong>'
         description_string +=
-          new_e.to_s + ':  ' +
+          new_e.to_s + ':  ' +# intercept tables here, before they are shortened
           pio_eval_prot_desc(
             sanitize_input(json_hash[e]),
             e
           ).html_safe + '<br>'
       end
     end
-    description_string
+    return description_string, unshortened_string_for_tables
   end
 
   def protocols_io_fill_step(original_json, newj)
@@ -316,7 +319,8 @@ module ProtocolsIoHelper
         # append is the string that we append values into for description
         # pio_stp_x means protocols io step (id of component) parser
         case key['component_type_id']
-        when '1'
+        when '1'  # intercept tables here, before they are shortened
+                  # all of the below
           newj[i.to_s]['description'] += pio_stp_1(key['data'])
         when '6'
           newj[i.to_s]['name'] = pio_stp_6(key['data'])
