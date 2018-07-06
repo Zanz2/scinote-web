@@ -263,11 +263,11 @@ module BootstrapFormHelper
 
     # Returns <textarea> helper tag for tinyMCE editor
     def tiny_mce_editor(name, options = {})
-      merged_array= options.merge(class: 'tinymce', cols: 120, rows: 15)
+      merged_array = options.merge(class: 'tinymce', cols: 120, rows: 15)
       merged_array[:class] = 'tinymce'
       # For some reason, text_area kept adding double form-control tags here, this is a fix (apparantly)
       return_val = text_area(name, merged_array)
-      return return_val
+      return_val
     end
   end
 end
