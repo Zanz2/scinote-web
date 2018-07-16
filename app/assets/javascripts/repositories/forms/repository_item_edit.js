@@ -24,10 +24,10 @@
    * @returns {undefinded}
    */
   RepositoryItemEditForm.prototype.renderForm = function(table) {
-    var colIndex     = getColumnIndex(table, '#row-name');
-    var cells        = this.itemData.repository_row.repository_cells;
+    var colIndex    = getColumnIndex(table, '#row-name');
+    var cells       = this.itemData.repository_row.repository_cells;
     var listColumns = this.itemData.repository_row.repository_column_items;
-    var formData     = this.formData;
+    var formData    = this.formData;
 
     if (colIndex) {
       $(this.repositoryItemElement).children('td').eq(colIndex)
@@ -192,9 +192,9 @@
       id + "' style='display:none' /><button class='btn btn-default' " +
       "data-object='" + object + "' name='" + name + "' value='" + value +
       "' data-id='" + id + "'>" + buttonLabel +
-      "</button></div><div><p class='file-name-label'>" + fileName +
+      "</button></div><div><p class='file-name-label'>" + truncateLongString(fileName, 20) +
       "</p></div>";
-    if(fileName.length > 0) {
+    if(value.file_file_name) {
       html += "<div><a data-action='removeAsset' ";
       html += "onClick='clearFileInput(this)'><i class='fas fa-times'></i></a>";
     } else {
@@ -312,7 +312,7 @@
                             .find('.file-name-label')[0]);
       var file   = this.files[0];
       if (file) {
-        $label.text(file.name);
+        $label.text(truncateLongString(file.name, 20));
         input.attr('remove', false);
         $($label.closest('.repository-input-file-field')
                 .find('[data-action="removeAsset"]')[0]).show();
