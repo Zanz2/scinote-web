@@ -41,48 +41,7 @@ class Sample < ApplicationRecord
 
       return new_query
     else
-      user_ids = User
-                 .joins(:user_teams)
-                 .where('user_teams.team_id IN (?)', team_ids)
-                 .where_attributes_like(['users.full_name'], query, options)
-                 .pluck(:id)
-
-      sample_ids = Sample
-                   .joins(:user)
-                   .where('team_id IN (?)', team_ids)
-                   .where_attributes_like(['name'], query, options)
-                   .pluck(:id)
-
-      sample_type_ids = SampleType
-                        .where('team_id IN (?)', team_ids)
-                        .where_attributes_like(['name'], query, options)
-                        .pluck(:id)
-
-      sample_group_ids = SampleGroup
-                         .where('team_id IN (?)', team_ids)
-                         .where_attributes_like(['name'], query, options)
-                         .pluck(:id)
-
-      sample_custom_fields = SampleCustomField
-                             .joins(:sample)
-                             .where('samples.team_id IN (?)', team_ids)
-                             .where_attributes_like(['value'], query, options)
-                             .pluck(:id)
-      new_query = Sample
-                  .distinct
-                  .joins(:user)
-                  .joins('LEFT OUTER JOIN sample_types ON ' \
-                         'samples.sample_type_id = sample_types.id')
-                  .joins('LEFT OUTER JOIN sample_groups ON ' \
-                         'samples.sample_group_id = sample_groups.id')
-                  .joins('LEFT OUTER JOIN sample_custom_fields ON ' \
-                         'samples.id = sample_custom_fields.sample_id')
-                  .where('samples.user_id IN (?) OR samples.id IN (?) ' \
-                         'OR sample_types.id IN (?) ' \
-                         'OR sample_groups.id IN (?)' \
-                         'OR sample_custom_fields.id IN (?)',
-                         user_ids, sample_ids, sample_type_ids,
-                         sample_group_ids, sample_custom_fields)
+      new_query = []
     end
     # Show all results if needed
     if page == Constants::SEARCH_NO_LIMIT

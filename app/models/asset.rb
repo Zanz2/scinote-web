@@ -97,13 +97,13 @@ class Asset < ApplicationRecord
     _current_team = nil,
     options = {}
   )
-
+    user_teams = user.teams
     new_query =
       Asset
       .distinct
       .select('assets.*')
       .left_outer_joins(:asset_text_datum)
-      .where(team: user.teams)
+      .where(team: user_teams)
 
     a_query = s_query = ''
 
@@ -154,7 +154,6 @@ class Asset < ApplicationRecord
         s_query
       )
     end
-
     # Show all results if needed
     if page != Constants::SEARCH_NO_LIMIT
       new_query.select("ts_headline(data, to_tsquery('" +

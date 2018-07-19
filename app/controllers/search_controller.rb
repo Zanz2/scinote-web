@@ -5,7 +5,6 @@ class SearchController < ApplicationController
     redirect_to new_search_path unless @search_query
 
     @search_id = params[:search_id] ? params[:search_id] : generate_search_id
-
     count_search_results
 
     search_projects if @search_category == :projects
