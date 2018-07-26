@@ -278,7 +278,10 @@ class SearchController < ApplicationController
 
   def search_assets
     @asset_results = []
+    start_time2 = Time.now
     @asset_results = search_by_name(Asset) if @asset_search_count > 0
+    end_time2 = Time.now
+    diff4 = (end_time2-start_time2)*1000
     @search_count = @asset_search_count
   end
 

@@ -97,16 +97,18 @@ class Asset < ApplicationRecord
     _current_team = nil,
     options = {}
   )
-    user_teams = user.teams
+    start_time = Time.now
     new_query =
       Asset
       .distinct
-      .select('assets.*')
+      .select('assets.*') # .select('assets.*')
       .left_outer_joins(:asset_text_datum)
-      .where(team: user_teams)
-
+      .where(team: user.teams)
+    end_time = Time.now
+    diff1= end_time-start_time
     a_query = s_query = ''
 
+    start_time = Time.now
     if options[:whole_word].to_s == 'true' ||
        options[:whole_phrase].to_s == 'true'
       like = options[:match_case].to_s == 'true' ? '~' : '~*'
@@ -148,13 +150,17 @@ class Asset < ApplicationRecord
                      .join('|')
                      .tr('\'', '"')
       new_query = new_query.where(
-        "(trim_html_tags(assets.file_file_name) #{like} ANY (array[?]) " \
+        "(trim_html_tags(assets.file_file_name) #{like} ANY (array[?]) "\
         "OR asset_text_data.data_vector @@ to_tsquery(?))",
         a_query,
         s_query
       )
     end
+
+    end_time = Time.now
+    diff2 = end_time-start_time
     # Show all results if needed
+    start_time1=Time.now
     if page != Constants::SEARCH_NO_LIMIT
       new_query.select("ts_headline(data, to_tsquery('" +
                        sanitize_sql_for_conditions(s_query) +
