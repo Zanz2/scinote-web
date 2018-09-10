@@ -543,6 +543,64 @@ Rails.application.routes.draw do
       if Api.configuration.core_api_v1_preview
         namespace :v1 do
           resources :teams, only: %i(index show) do
+            resources :inventories,
+                      only: %i(index create show update destroy) do
+              resources :inventory_columns,
+                        only: %i(index create show update destroy),
+                        path: 'columns',
+                        as: :columns
+              resources :inventory_items,
+                        only: %i(index create show update destroy),
+                        path: 'items',
+                        as: :items
+            end
+            resources :projects, only: %i(index show) do
+              resources :experiments, only: %i(index show) do
+                resources :my_modules,
+                          only: %i(index show),
+                          path: 'tasks',
+                          as: :tasks do
+                  resources :my_module_repository_rows, only: %i(index show),
+                            path: 'task_inventory_rows',
+                            as: :task_inventory_rows
+                  resources :user_my_modules, only: %i(index show),
+                             path: 'user_tasks',
+                             as: :user_tasks
+                  resources :my_module_tags, only: %i(index show),
+                             path: 'task_tags',
+                             as: :task_tags
+                  resources :protocols, only: %i(index show),
+                             path: 'protocols',
+                             as: :protocols
+                  resources :results, only: %i(index show),
+                             path: 'results',
+                             as: :results
+                  get 'inputs',
+                      to: 'my_modules#inputs'
+                  get 'inputs/:id',
+                      to: 'my_modules#input'
+                  get 'outputs',
+                      to: 'my_modules#outputs'
+                  get 'outputs/:id',
+                      to: 'my_modules#output'
+                  resources :activities, only: %i(index show),
+                             path: 'activities',
+                             as: :activities
+                end
+                resources :my_module_groups,
+                          only: %i(index show),
+                          path: 'task_groups',
+                          as: :task_groups
+                resources :connections,
+                          only: %i(index show),
+                          path: 'connections',
+                          as: :connections
+              end
+            end
+            resources :users, only: %i(show) do
+              resources :user_identities,
+                        only: %i(index create show update destroy)
+            end
           end
         end
       end
