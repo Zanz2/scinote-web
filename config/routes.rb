@@ -559,6 +559,7 @@ Rails.application.routes.draw do
                 resources :my_modules,
                           only: %i(index show),
                           path: 'tasks',
+<<<<<<< HEAD
                           as: :tasks do
                   resources :my_module_repository_rows, only: %i(index show),
                             path: 'task_inventory_rows',
@@ -587,6 +588,9 @@ Rails.application.routes.draw do
                              path: 'activities',
                              as: :activities
                 end
+=======
+                          as: :tasks
+>>>>>>> c2d62667e4cb652a913c60e0fb0d98826e8ae06b
                 resources :my_module_groups,
                           only: %i(index show),
                           path: 'task_groups',
@@ -597,10 +601,10 @@ Rails.application.routes.draw do
                           as: :connections
               end
             end
-            resources :users, only: %i(show) do
-              resources :user_identities,
-                        only: %i(index create show update destroy)
-            end
+          end
+          resources :users, only: %i(show) do
+            resources :user_identities,
+                      only: %i(index create show update destroy)
           end
         end
       end
